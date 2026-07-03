@@ -148,11 +148,12 @@
 
       .layout {
         display: grid;
-        grid-template-columns: 1fr 260px;
-        gap: 18px;
+        grid-template-columns: 1fr;
+        gap: 14px;
         align-items: start;
         max-width: 1500px;
         margin: 0 auto;
+        padding-bottom: 170px;
       }
 
       .board-shell {
@@ -188,12 +189,12 @@
       }
 
       .tile {
-        min-height: clamp(86px, 12vh, 128px);
+        min-height: clamp(56px, 8vh, 112px);
         border: 0;
         background: var(--cell);
         color: var(--amber);
         font-family: "Orbitron", system-ui, sans-serif;
-        font-size: clamp(27px, 4.2vw, 55px);
+        font-size: clamp(27px, 3.5vw, 50px);
         font-weight: 800;
         text-shadow: 2px 2px 0 #000;
       }
@@ -212,100 +213,129 @@
       }
 
       .score-panel {
+        position: fixed;
+        right: auto;
+        bottom: 0;
+        left: 50%;
+        z-index: 35;
+        width: min(1500px, calc(100% - 36px));
+        transform: translateX(-50%);
         display: grid;
-        gap: 12px;
-      }
-
-      .team-card,
-      .progress-card {
-        border: 1px solid rgba(0, 255, 255, 0.42);
-        background: rgba(9, 13, 53, 0.92);
+        grid-template-columns: repeat(4, minmax(136px, 1fr));
+        gap: 24px;
+        align-items: end;
+        padding: 16px 28px 8px;
+        border: 3px solid rgba(255, 255, 255, 0.4);
+        border-bottom: 0;
+        background: #2d389b;
+        overflow-x: auto;
       }
 
       .team-card {
-        padding: 14px;
+        min-width: 136px;
+        border: 0;
+        border-radius: 2px 2px 0 0;
+        background: #f7f7f8;
+        color: #050616;
+        padding: 7px;
       }
 
       .team-name-label {
-        display: block;
-        margin-bottom: 6px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
       }
 
       .team-name {
         width: 100%;
-        min-height: 36px;
+        min-height: 37px;
         box-sizing: border-box;
-        border: 1px solid rgba(0, 255, 255, 0.35);
-        background: #07105f;
-        color: var(--text);
-        padding: 0 10px;
-        font-size: 15px;
+        border: 0;
+        border-bottom: 2px solid #050616;
+        background: transparent;
+        color: #050616;
+        padding: 0 4px 3px;
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: clamp(18px, 2.2vw, 27px);
         font-weight: 800;
+        text-align: center;
       }
 
       .team-name:focus {
-        outline: 3px solid var(--cyan);
+        outline: 2px solid #050616;
         outline-offset: 2px;
+        background: #ffffff;
       }
 
       .score {
+        display: flex;
+        min-height: 38px;
+        align-items: center;
+        justify-content: center;
         margin-top: 8px;
-        color: var(--amber);
+        background: #2d389b;
+        color: #ffffff;
         font-family: "Orbitron", system-ui, sans-serif;
-        font-size: 34px;
+        font-size: clamp(22px, 2.8vw, 30px);
         font-weight: 800;
         font-variant-numeric: tabular-nums;
+        line-height: 1;
       }
 
       .score-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
-        margin-top: 12px;
+        margin-top: 5px;
       }
 
       .score-actions button {
-        min-height: 34px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: #111b83;
-        color: var(--text);
-        font-size: 12px;
+        min-height: 31px;
+        border: 0;
+        background: transparent;
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: 28px;
         font-weight: 700;
+        line-height: 1;
         overflow-wrap: anywhere;
       }
 
-      .custom-score {
-        grid-column: 1 / -1;
-        min-height: 34px;
-        box-sizing: border-box;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: #060b3b;
-        color: var(--text);
-        padding: 0 10px;
-        font-size: 14px;
-        font-weight: 700;
+      .score-actions button[data-adjust-active$=":1"] {
+        color: #009c55;
+      }
+
+      .score-actions button[data-adjust-active$=":-1"] {
+        color: #ff001b;
+      }
+
+      .score-actions button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
       }
 
       .progress-card {
-        padding: 14px;
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.45;
+        display: none;
       }
 
       .progress-card strong {
-        display: block;
-        margin-bottom: 4px;
+        display: inline;
+        margin-bottom: 0;
         color: var(--text);
         font-size: 15px;
       }
 
       dialog {
+        position: fixed;
+        top: 92px;
+        left: 50%;
+        z-index: 45;
         width: min(900px, calc(100% - 28px));
+        max-height: calc(100vh - 260px);
+        overflow: auto;
+        transform: translateX(-50%);
         border: 3px solid var(--cyan);
         padding: 0;
         background: #080b2a;
@@ -401,6 +431,10 @@
         border-color: var(--green);
       }
 
+      .modal-actions button[data-team-award^="teamD"] {
+        border-color: var(--amber);
+      }
+
       @media (max-width: 980px) {
         .topbar {
           grid-template-columns: 1fr;
@@ -411,16 +445,19 @@
           justify-content: center;
         }
 
-        .layout {
-          grid-template-columns: 1fr;
-        }
-
         .score-panel {
-          grid-template-columns: repeat(3, minmax(0, 1fr));
+          grid-template-columns: repeat(4, minmax(132px, 1fr));
+          gap: 14px;
+          padding: 12px 14px 0;
         }
 
         .progress-card {
           grid-column: 1 / -1;
+        }
+
+        dialog {
+          top: 76px;
+          max-height: calc(100vh - 238px);
         }
       }
 
@@ -429,8 +466,13 @@
           padding: 10px;
         }
 
+        .layout {
+          padding-bottom: 320px;
+        }
+
         .score-panel {
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(2, minmax(130px, 1fr));
+          width: calc(100% - 20px);
         }
 
         .category {
@@ -438,11 +480,16 @@
         }
 
         .tile {
-          min-height: 82px;
+          min-height: 60px;
         }
 
         .modal-body {
           padding: 18px;
+        }
+
+        dialog {
+          top: 62px;
+          max-height: calc(100vh - 372px);
         }
       }
     </style>
@@ -470,38 +517,38 @@
         <aside class="score-panel" aria-label="Team scores">
           <section class="team-card">
             <label class="team-name-label" for="teamAName">Team name</label>
-            <input class="team-name" id="teamAName" data-team-name="teamA" value="Team A" maxlength="24" />
+            <input class="team-name" id="teamAName" data-team-name="teamA" value="Team 1" maxlength="24" />
             <div class="score" id="teamA">0</div>
             <div class="score-actions">
-              <button type="button" data-adjust-active="teamA:-1">- clue</button>
-              <button type="button" data-adjust-active="teamA:1">+ clue</button>
-              <input class="custom-score" aria-label="Team A custom score amount" data-custom-score="teamA" inputmode="numeric" type="number" min="1" step="50" value="100" />
-              <button type="button" data-adjust-custom="teamA:-1">- custom</button>
-              <button type="button" data-adjust-custom="teamA:1">+ custom</button>
+              <button type="button" data-adjust-active="teamA:1">+</button>
+              <button type="button" data-adjust-active="teamA:-1">-</button>
             </div>
           </section>
           <section class="team-card">
             <label class="team-name-label" for="teamBName">Team name</label>
-            <input class="team-name" id="teamBName" data-team-name="teamB" value="Team B" maxlength="24" />
+            <input class="team-name" id="teamBName" data-team-name="teamB" value="Team 2" maxlength="24" />
             <div class="score" id="teamB">0</div>
             <div class="score-actions">
-              <button type="button" data-adjust-active="teamB:-1">- clue</button>
-              <button type="button" data-adjust-active="teamB:1">+ clue</button>
-              <input class="custom-score" aria-label="Team B custom score amount" data-custom-score="teamB" inputmode="numeric" type="number" min="1" step="50" value="100" />
-              <button type="button" data-adjust-custom="teamB:-1">- custom</button>
-              <button type="button" data-adjust-custom="teamB:1">+ custom</button>
+              <button type="button" data-adjust-active="teamB:1">+</button>
+              <button type="button" data-adjust-active="teamB:-1">-</button>
             </div>
           </section>
           <section class="team-card">
             <label class="team-name-label" for="teamCName">Team name</label>
-            <input class="team-name" id="teamCName" data-team-name="teamC" value="Team C" maxlength="24" />
+            <input class="team-name" id="teamCName" data-team-name="teamC" value="Team 3" maxlength="24" />
             <div class="score" id="teamC">0</div>
             <div class="score-actions">
-              <button type="button" data-adjust-active="teamC:-1">- clue</button>
-              <button type="button" data-adjust-active="teamC:1">+ clue</button>
-              <input class="custom-score" aria-label="Team C custom score amount" data-custom-score="teamC" inputmode="numeric" type="number" min="1" step="50" value="100" />
-              <button type="button" data-adjust-custom="teamC:-1">- custom</button>
-              <button type="button" data-adjust-custom="teamC:1">+ custom</button>
+              <button type="button" data-adjust-active="teamC:1">+</button>
+              <button type="button" data-adjust-active="teamC:-1">-</button>
+            </div>
+          </section>
+          <section class="team-card">
+            <label class="team-name-label" for="teamDName">Team name</label>
+            <input class="team-name" id="teamDName" data-team-name="teamD" value="Team 4" maxlength="24" />
+            <div class="score" id="teamD">0</div>
+            <div class="score-actions">
+              <button type="button" data-adjust-active="teamD:1">+</button>
+              <button type="button" data-adjust-active="teamD:-1">-</button>
             </div>
           </section>
           <section class="progress-card">
@@ -530,6 +577,8 @@
           <button type="button" data-team-award="teamB:-1">- Team B</button>
           <button type="button" data-team-award="teamC:1">+ Team C</button>
           <button type="button" data-team-award="teamC:-1">- Team C</button>
+          <button type="button" data-team-award="teamD:1">+ Team 4</button>
+          <button type="button" data-team-award="teamD:-1">- Team 4</button>
         </div>
       </div>
     </dialog>
@@ -1161,11 +1210,11 @@
       games.forEach(generateCluesForGame);
 
       const values = [100, 200, 300, 400, 500];
-      const defaultTeamNames = { teamA: "Team A", teamB: "Team B", teamC: "Team C" };
+      const defaultTeamNames = { teamA: "Team 1", teamB: "Team 2", teamC: "Team 3", teamD: "Team 4" };
       const state = {
         gameIndex: 0,
         used: new Set(),
-        scores: { teamA: 0, teamB: 0, teamC: 0 },
+        scores: { teamA: 0, teamB: 0, teamC: 0, teamD: 0 },
         teamNames: { ...defaultTeamNames },
         active: null,
       };
@@ -1207,16 +1256,22 @@
           const [team, direction] = button.dataset.teamAward.split(":");
           button.textContent = `${Number(direction) > 0 ? "+" : "-"} ${displayTeamName(team)}`;
         });
+
+        document.querySelectorAll("[data-adjust-active]").forEach((button) => {
+          const [team, direction] = button.dataset.adjustActive.split(":");
+          const action = Number(direction) > 0 ? "Add" : "Subtract";
+          const value = activeClueValue();
+          button.disabled = !state.active;
+          button.setAttribute(
+            "aria-label",
+            state.active ? `${action} ${value} points ${Number(direction) > 0 ? "to" : "from"} ${displayTeamName(team)}` : "Select a question first",
+          );
+          button.title = state.active ? `${action} ${value}` : "Select a question first";
+        });
       }
 
       function activeClueValue() {
-        return state.active?.value || 100;
-      }
-
-      function customScoreAmount(team) {
-        const input = document.querySelector(`[data-custom-score="${team}"]`);
-        const amount = Math.abs(Number(input?.value));
-        return Number.isFinite(amount) && amount > 0 ? amount : 100;
+        return state.active?.value || 0;
       }
 
       function renderSelect() {
@@ -1236,8 +1291,11 @@
       function renderProgress() {
         const usedInGame = [...state.used].filter((key) => key.startsWith(`${currentGame().id}:`)).length;
         progressCount.textContent = `${usedInGame} / 25 used`;
-        progressText.textContent =
-          usedInGame === 25 ? "Board complete. Start a new board or choose another game." : "Choose a value from the board.";
+        progressText.textContent = state.active
+          ? `Selected value: ${state.active.value}. Use + or - under a team.`
+          : usedInGame === 25
+            ? "Board complete. Start a new board or choose another game."
+            : "Choose a value from the board.";
       }
 
       function renderBoard() {
@@ -1267,6 +1325,7 @@
         }
 
         renderProgress();
+        renderTeamNames();
       }
 
       function openClue(categoryIndex, valueIndex) {
@@ -1285,7 +1344,7 @@
         modalAnswer.classList.remove("is-visible");
 
         renderBoard();
-        dialog.showModal();
+        if (!dialog.open) dialog.show();
       }
 
       function addScore(team, amount) {
@@ -1305,7 +1364,7 @@
       }
 
       function resetScores() {
-        state.scores = { teamA: 0, teamB: 0, teamC: 0 };
+        state.scores = { teamA: 0, teamB: 0, teamC: 0, teamD: 0 };
         renderScores();
       }
 
@@ -1331,15 +1390,9 @@
 
       document.querySelectorAll("[data-adjust-active]").forEach((button) => {
         button.addEventListener("click", () => {
+          if (!state.active) return;
           const [team, direction] = button.dataset.adjustActive.split(":");
           addScore(team, Number(direction) * activeClueValue());
-        });
-      });
-
-      document.querySelectorAll("[data-adjust-custom]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const [team, direction] = button.dataset.adjustCustom.split(":");
-          addScore(team, Number(direction) * customScoreAmount(team));
         });
       });
 
