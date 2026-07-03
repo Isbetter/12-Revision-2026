@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Three classroom Jeopardy games for Year 11 Mathematics Standard: earning money, formulas and equations, and applications of measurement."
+    />
+    <title>Year 11 Mathematics Standard Jeopardy</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap");
+
+      :root {
+        --bg: #0a0014;
+        --board: #111b83;
+        --cell: #1d2f9e;
+        --cell-used: #17205d;
+        --line: #050616;
+        --text: #f4f7ff;
+        --muted: #b7c3ff;
+        --cyan: #00ffff;
+        --magenta: #ff006e;
+        --amber: #ffb000;
+        --green: #00ff41;
+        --red: #ff3b30;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Space Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          to bottom,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.06) 1px,
+          transparent 1px,
+          transparent 6px
+        );
+        opacity: 0.16;
+        z-index: 50;
+      }
+
+      button,
+      select {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .app {
+        min-height: 100vh;
+        padding: 18px;
+        background:
+          linear-gradient(90deg, rgba(0, 255, 255, 0.08) 1px, transparent 1px),
+          linear-gradient(rgba(0, 255, 255, 0.06) 1px, transparent 1px),
+          var(--bg);
+        background-size: 40px 40px;
+      }
+
+      .topbar {
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) minmax(280px, auto) minmax(180px, 1fr);
+        gap: 16px;
+        align-items: center;
+        margin: 0 auto 18px;
+        max-width: 1500px;
+      }
+
+      .home-link {
+        color: var(--cyan);
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .title-wrap {
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        color: var(--text);
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: clamp(26px, 4vw, 54px);
+        line-height: 1;
+        font-weight: 800;
+        text-shadow: 2px 0 var(--magenta), -2px 0 var(--cyan);
+      }
+
+      .subtitle {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .game-select,
+      .small-button {
+        min-height: 38px;
+        border: 1px solid rgba(0, 255, 255, 0.55);
+        border-radius: 0;
+        background: #090d35;
+        color: var(--text);
+      }
+
+      .game-select {
+        max-width: 100%;
+        padding: 0 10px;
+      }
+
+      .small-button {
+        padding: 0 12px;
+        font-weight: 700;
+      }
+
+      .small-button:hover,
+      .small-button:focus-visible,
+      .game-select:focus-visible {
+        outline: 2px solid var(--amber);
+        outline-offset: 2px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 18px;
+        align-items: start;
+        max-width: 1500px;
+        margin: 0 auto;
+      }
+
+      .board-shell {
+        min-width: 0;
+        border: 3px solid var(--line);
+        background: var(--line);
+        box-shadow: 0 0 0 1px rgba(0, 255, 255, 0.35), 0 0 28px rgba(0, 255, 255, 0.14);
+        overflow-x: auto;
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(150px, 1fr));
+        min-width: 840px;
+        background: var(--line);
+        gap: 3px;
+      }
+
+      .category {
+        min-height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px 10px;
+        background: #2736a6;
+        color: var(--text);
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: clamp(13px, 1.5vw, 19px);
+        line-height: 1.16;
+        font-weight: 700;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      .tile {
+        min-height: clamp(86px, 12vh, 128px);
+        border: 0;
+        background: var(--cell);
+        color: var(--amber);
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: clamp(27px, 4.2vw, 55px);
+        font-weight: 800;
+        text-shadow: 2px 2px 0 #000;
+      }
+
+      .tile:hover,
+      .tile:focus-visible {
+        outline: 3px solid var(--cyan);
+        outline-offset: -6px;
+        background: #253bd0;
+      }
+
+      .tile.is-used {
+        background: var(--cell-used);
+        color: rgba(255, 176, 0, 0.28);
+        text-shadow: none;
+      }
+
+      .score-panel {
+        display: grid;
+        gap: 12px;
+      }
+
+      .team-card,
+      .progress-card {
+        border: 1px solid rgba(0, 255, 255, 0.42);
+        background: rgba(9, 13, 53, 0.92);
+      }
+
+      .team-card {
+        padding: 14px;
+      }
+
+      .team-card h2 {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.2;
+      }
+
+      .score {
+        margin-top: 8px;
+        color: var(--amber);
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: 34px;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .score-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .score-actions button {
+        min-height: 34px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: #111b83;
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .progress-card {
+        padding: 14px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .progress-card strong {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--text);
+        font-size: 15px;
+      }
+
+      dialog {
+        width: min(900px, calc(100% - 28px));
+        border: 3px solid var(--cyan);
+        padding: 0;
+        background: #080b2a;
+        color: var(--text);
+        box-shadow: 0 0 36px rgba(0, 255, 255, 0.35);
+      }
+
+      dialog::backdrop {
+        background: rgba(0, 0, 0, 0.82);
+      }
+
+      .modal-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 18px;
+        border-bottom: 2px solid var(--line);
+        background: #141f83;
+      }
+
+      .modal-label {
+        margin: 0;
+        color: var(--amber);
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .close-button {
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: transparent;
+        color: var(--text);
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .modal-body {
+        display: grid;
+        gap: 18px;
+        padding: 24px;
+      }
+
+      .question {
+        margin: 0;
+        font-size: clamp(24px, 4vw, 42px);
+        line-height: 1.18;
+        font-weight: 700;
+      }
+
+      .answer {
+        display: none;
+        margin: 0;
+        padding: 16px;
+        border-left: 5px solid var(--green);
+        background: rgba(0, 255, 65, 0.08);
+        color: var(--text);
+        font-size: clamp(20px, 3vw, 30px);
+        line-height: 1.25;
+      }
+
+      .answer.is-visible {
+        display: block;
+      }
+
+      .modal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .modal-actions button {
+        min-height: 42px;
+        border: 1px solid rgba(0, 255, 255, 0.55);
+        background: #111b83;
+        color: var(--text);
+        padding: 0 14px;
+        font-weight: 700;
+      }
+
+      .modal-actions button[data-team="teamA"] {
+        border-color: var(--cyan);
+      }
+
+      .modal-actions button[data-team="teamB"] {
+        border-color: var(--magenta);
+      }
+
+      .modal-actions button[data-team="teamC"] {
+        border-color: var(--green);
+      }
+
+      @media (max-width: 980px) {
+        .topbar {
+          grid-template-columns: 1fr;
+          text-align: center;
+        }
+
+        .controls {
+          justify-content: center;
+        }
+
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .score-panel {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .progress-card {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .app {
+          padding: 10px;
+        }
+
+        .score-panel {
+          grid-template-columns: 1fr;
+        }
+
+        .category {
+          min-height: 74px;
+        }
+
+        .tile {
+          min-height: 82px;
+        }
+
+        .modal-body {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <a class="home-link" href="/">Revision hub</a>
+        <div class="title-wrap">
+          <h1>Jeopardy</h1>
+          <p class="subtitle" id="gameSubtitle">Year 11 Mathematics Standard</p>
+        </div>
+        <div class="controls">
+          <select class="game-select" id="gameSelect" aria-label="Choose game"></select>
+          <button class="small-button" id="resetBoard" type="button">Reset board</button>
+          <button class="small-button" id="resetScores" type="button">Reset scores</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="board-shell" aria-label="Jeopardy board">
+          <div class="board" id="board"></div>
+        </section>
+
+        <aside class="score-panel" aria-label="Team scores">
+          <section class="team-card">
+            <h2>Team A</h2>
+            <div class="score" id="teamA">0</div>
+            <div class="score-actions">
+              <button type="button" data-adjust="teamA:-100">-100</button>
+              <button type="button" data-adjust="teamA:100">+100</button>
+            </div>
+          </section>
+          <section class="team-card">
+            <h2>Team B</h2>
+            <div class="score" id="teamB">0</div>
+            <div class="score-actions">
+              <button type="button" data-adjust="teamB:-100">-100</button>
+              <button type="button" data-adjust="teamB:100">+100</button>
+            </div>
+          </section>
+          <section class="team-card">
+            <h2>Team C</h2>
+            <div class="score" id="teamC">0</div>
+            <div class="score-actions">
+              <button type="button" data-adjust="teamC:-100">-100</button>
+              <button type="button" data-adjust="teamC:100">+100</button>
+            </div>
+          </section>
+          <section class="progress-card">
+            <strong id="progressCount">0 / 25 used</strong>
+            <span id="progressText">Choose a value from the board.</span>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <dialog id="questionDialog">
+      <form method="dialog">
+        <div class="modal-head">
+          <p class="modal-label" id="modalLabel">Category 100</p>
+          <button class="close-button" aria-label="Close question" type="submit">x</button>
+        </div>
+      </form>
+      <div class="modal-body">
+        <p class="question" id="modalQuestion"></p>
+        <p class="answer" id="modalAnswer"></p>
+        <div class="modal-actions">
+          <button type="button" id="showAnswer">Show answer</button>
+          <button type="button" data-team="teamA">Award Team A</button>
+          <button type="button" data-team="teamB">Award Team B</button>
+          <button type="button" data-team="teamC">Award Team C</button>
+        </div>
+      </div>
+    </dialog>
+
+    <script>
+      const games = [
+        {
+          id: "earning-money",
+          title: "Chapter 1: Earning Money",
+          subtitle: "Percentages, wages, rates, commission and tax",
+          categories: [
+            {
+              title: "Percentages",
+              clues: [
+                ["Convert 0.35 to a percentage.", "35%"],
+                ["Increase 80 by 15%.", "92"],
+                ["Find 25% of $640.", "$160"],
+                ["A $150 item has a 20% discount. What is the sale price?", "$120"],
+                ["A weekly pay rises from $760 to $836. What is the percentage increase?", "10%"],
+              ],
+            },
+            {
+              title: "Salaries and Wages",
+              clues: [
+                ["A worker earns $24 per hour for 7 hours. What is the gross pay?", "$168"],
+                ["An annual salary is $62,400. What is the weekly salary?", "$1,200"],
+                ["Find the gross pay for 38 hours at $32.50 per hour.", "$1,235"],
+                ["Annual leave pay is $1,200 plus 17.5% loading. What is the total?", "$1,410"],
+                ["A bonus is 4% of a $68,000 salary. What is the bonus?", "$2,720"],
+              ],
+            },
+            {
+              title: "Penalty Rates",
+              clues: [
+                ["What multiplier is used for time-and-a-half?", "1.5"],
+                ["Find 3 hours of overtime at $26 per hour paid at time-and-a-half.", "$117"],
+                ["Find 4 hours at $28 per hour paid at double time.", "$224"],
+                ["A worker earns $30 per hour for 8 normal hours and 2 hours at time-and-a-half. Find the gross pay.", "$330"],
+                ["A worker receives $950 gross pay plus an $18 daily allowance for 5 days. Find the total gross pay.", "$1,040"],
+              ],
+            },
+            {
+              title: "Commission",
+              clues: [
+                ["Find 5% commission on $3,000 of sales.", "$150"],
+                ["Base pay is $600 plus 8% commission on $5,000. Find total pay.", "$1,000"],
+                ["Piecework pays $1.75 per item. Find the pay for 240 items.", "$420"],
+                ["Royalties are 12% of $18,500. Find the royalty payment.", "$2,220"],
+                ["Commission is 4% on the first $20,000 and 6% on the next $12,000. Find total commission.", "$1,520"],
+              ],
+            },
+            {
+              title: "Tax and Net Pay",
+              clues: [
+                ["Taxable income is found by subtracting what from gross income?", "Allowable deductions"],
+                ["Gross pay is $920 and deductions are $165. Find net pay.", "$755"],
+                ["Income is $52,000 and allowable deductions are $2,400. Find taxable income.", "$49,600"],
+                ["Find a 2% Medicare levy on $58,000.", "$1,160"],
+                ["Income tax is $9,200 and Medicare levy is $1,260. Find the total amount payable.", "$10,460"],
+              ],
+            },
+          ],
+        },
+        {
+          id: "formulas-equations",
+          title: "Chapter 2: Formulas and Equations",
+          subtitle: "Substitution, algebra, equations, formulas and applications",
+          categories: [
+            {
+              title: "Substitution",
+              clues: [
+                ["Evaluate 3x + 2 when x = 4.", "14"],
+                ["Evaluate a^2 - b^2 when a = 5 and b = 3.", "16"],
+                ["Use C = 2 pi r with r = 7 and pi = 3.14. Find C.", "43.96"],
+                ["Use v = d/t with d = 180 and t = 3. Find v.", "60"],
+                ["Use A = P(1 + rn) with P = 500, r = 0.04 and n = 3. Find A.", "560"],
+              ],
+            },
+            {
+              title: "Algebra Skills",
+              clues: [
+                ["Simplify 4x + 3x.", "7x"],
+                ["Expand 3(x + 5).", "3x + 15"],
+                ["Simplify 2a + 5b - a + 3b.", "a + 8b"],
+                ["Expand -2(3x - 4).", "-6x + 8"],
+                ["Factorise 12x + 18.", "6(2x + 3)"],
+              ],
+            },
+            {
+              title: "Linear Equations",
+              clues: [
+                ["Solve x + 7 = 19.", "x = 12"],
+                ["Solve 4x = 36.", "x = 9"],
+                ["Solve 3x - 5 = 16.", "x = 7"],
+                ["Solve 2(x + 3) = 18.", "x = 6"],
+                ["Solve 5x + 4 = 2x + 22.", "x = 6"],
+              ],
+            },
+            {
+              title: "Rearranging",
+              clues: [
+                ["Use d = st. Find d when s = 80 and t = 2.5.", "d = 200"],
+                ["Use v = d/t. Find v when d = 150 and t = 2.", "v = 75"],
+                ["Make t the subject of d = st.", "t = d/s"],
+                ["Make r the subject of C = 2 pi r.", "r = C/(2 pi)"],
+                ["Make h the subject of A = 1/2 bh.", "h = 2A/b"],
+              ],
+            },
+            {
+              title: "Applications",
+              clues: [
+                ["Stopping distance is reaction distance plus braking distance. Find it if they are 12 m and 28 m.", "40 m"],
+                ["Dosage is 5 mL per 10 kg. Find the dosage for 30 kg.", "15 mL"],
+                ["How long does 210 km take at 70 km/h?", "3 hours"],
+                ["An IV drip gives 500 mL over 4 hours. Find the rate in mL per hour.", "125 mL/h"],
+                ["BAC decreases by 0.015 per hour. If BAC is 0.075, what is it after 2 hours?", "0.045"],
+              ],
+            },
+          ],
+        },
+        {
+          id: "measurement",
+          title: "Chapter 3: Applications of Measurement",
+          subtitle: "Pythagoras, units, perimeter, area, surface area and volume",
+          categories: [
+            {
+              title: "Pythagoras",
+              clues: [
+                ["A right triangle has legs 3 and 4. Find the hypotenuse.", "5"],
+                ["A right triangle has legs 6 and 8. Find the hypotenuse.", "10"],
+                ["The hypotenuse is 13 and one leg is 5. Find the other leg.", "12"],
+                ["A 5 m ladder has its base 1.2 m from a wall. How high up the wall does it reach, to 2 decimal places?", "4.85 m"],
+                ["A rectangle has diagonal 10 and width 6. Find its length.", "8"],
+              ],
+            },
+            {
+              title: "Units and Notation",
+              clues: [
+                ["Convert 1.2 km to metres.", "1,200 m"],
+                ["Convert 4,500 mL to litres.", "4.5 L"],
+                ["Write 3.6 x 10^5 as an ordinary number.", "360,000"],
+                ["Write 0.0048 in scientific notation.", "4.8 x 10^-3"],
+                ["Convert 2.5 m^2 to cm^2.", "25,000 cm^2"],
+              ],
+            },
+            {
+              title: "Perimeter and Area",
+              clues: [
+                ["Find the perimeter of a rectangle 8 cm by 5 cm.", "26 cm"],
+                ["Find the area of a triangle with base 12 and height 7.", "42 square units"],
+                ["Find the circumference of a circle with radius 4, using pi = 3.14.", "25.12 units"],
+                ["Find the area of a 90 degree sector with radius 6, using pi = 3.14.", "28.26 square units"],
+                ["A 10 by 6 rectangle has a 2 by 3 rectangle cut out. Find the remaining area.", "54 square units"],
+              ],
+            },
+            {
+              title: "Surface Area",
+              clues: [
+                ["Find the surface area of a rectangular prism 4 by 3 by 2.", "52 square units"],
+                ["Find the surface area of a cube with side length 5.", "150 square units"],
+                ["Find the total surface area of a cylinder with r = 3 and h = 10, using pi = 3.14.", "244.92 square units"],
+                ["Find the surface area of a sphere with r = 4, using pi = 3.14.", "200.96 square units"],
+                ["A triangular prism has a 3-4-5 triangular end and length 10. Find its surface area.", "132 square units"],
+              ],
+            },
+            {
+              title: "Volume and Capacity",
+              clues: [
+                ["Find the volume of a rectangular prism 5 by 4 by 3.", "60 cubic units"],
+                ["Find the volume of a cylinder with r = 3 and h = 8, using pi = 3.14.", "226.08 cubic units"],
+                ["Find the volume of a pyramid with base area 36 and height 9.", "108 cubic units"],
+                ["Find the volume of a cone with r = 4 and h = 9, using pi = 3.14.", "150.72 cubic units"],
+                ["Convert 2.4 m^3 to litres.", "2,400 L"],
+              ],
+            },
+          ],
+        },
+      ];
+
+      const values = [100, 200, 300, 400, 500];
+      const state = {
+        gameIndex: 0,
+        used: new Set(),
+        scores: { teamA: 0, teamB: 0, teamC: 0 },
+        active: null,
+      };
+
+      const board = document.getElementById("board");
+      const gameSelect = document.getElementById("gameSelect");
+      const subtitle = document.getElementById("gameSubtitle");
+      const dialog = document.getElementById("questionDialog");
+      const modalLabel = document.getElementById("modalLabel");
+      const modalQuestion = document.getElementById("modalQuestion");
+      const modalAnswer = document.getElementById("modalAnswer");
+      const progressCount = document.getElementById("progressCount");
+      const progressText = document.getElementById("progressText");
+
+      function currentGame() {
+        return games[state.gameIndex];
+      }
+
+      function clueKey(categoryIndex, valueIndex) {
+        return `${currentGame().id}:${categoryIndex}:${valueIndex}`;
+      }
+
+      function renderSelect() {
+        gameSelect.innerHTML = games
+          .map((game, index) => `<option value="${index}">${game.title}</option>`)
+          .join("");
+        gameSelect.value = String(state.gameIndex);
+      }
+
+      function renderScores() {
+        for (const [team, score] of Object.entries(state.scores)) {
+          document.getElementById(team).textContent = score;
+        }
+      }
+
+      function renderProgress() {
+        const usedInGame = [...state.used].filter((key) => key.startsWith(`${currentGame().id}:`)).length;
+        progressCount.textContent = `${usedInGame} / 25 used`;
+        progressText.textContent =
+          usedInGame === 25 ? "Board complete. Reset the board or choose another game." : "Choose a value from the board.";
+      }
+
+      function renderBoard() {
+        const game = currentGame();
+        subtitle.textContent = game.subtitle;
+        board.innerHTML = "";
+
+        for (const category of game.categories) {
+          const heading = document.createElement("div");
+          heading.className = "category";
+          heading.textContent = category.title;
+          board.appendChild(heading);
+        }
+
+        for (let row = 0; row < values.length; row += 1) {
+          for (let column = 0; column < game.categories.length; column += 1) {
+            const value = values[row];
+            const button = document.createElement("button");
+            const key = clueKey(column, row);
+            button.className = `tile ${state.used.has(key) ? "is-used" : ""}`;
+            button.type = "button";
+            button.textContent = value;
+            button.setAttribute("aria-label", `${game.categories[column].title} for ${value}`);
+            button.addEventListener("click", () => openClue(column, row));
+            board.appendChild(button);
+          }
+        }
+
+        renderProgress();
+      }
+
+      function openClue(categoryIndex, valueIndex) {
+        const game = currentGame();
+        const category = game.categories[categoryIndex];
+        const value = values[valueIndex];
+        const [question, answer] = category.clues[valueIndex];
+        const key = clueKey(categoryIndex, valueIndex);
+
+        state.active = { categoryIndex, valueIndex, value, key };
+        state.used.add(key);
+
+        modalLabel.textContent = `${category.title} ${value}`;
+        modalQuestion.textContent = question;
+        modalAnswer.textContent = answer;
+        modalAnswer.classList.remove("is-visible");
+
+        renderBoard();
+        dialog.showModal();
+      }
+
+      function addScore(team, amount) {
+        state.scores[team] += amount;
+        renderScores();
+      }
+
+      function resetBoard() {
+        const gameId = currentGame().id;
+        for (const key of [...state.used]) {
+          if (key.startsWith(`${gameId}:`)) state.used.delete(key);
+        }
+        renderBoard();
+      }
+
+      function resetScores() {
+        state.scores = { teamA: 0, teamB: 0, teamC: 0 };
+        renderScores();
+      }
+
+      gameSelect.addEventListener("change", (event) => {
+        state.gameIndex = Number(event.target.value);
+        state.active = null;
+        renderBoard();
+      });
+
+      document.getElementById("showAnswer").addEventListener("click", () => {
+        modalAnswer.classList.add("is-visible");
+      });
+
+      document.getElementById("resetBoard").addEventListener("click", resetBoard);
+      document.getElementById("resetScores").addEventListener("click", resetScores);
+
+      document.querySelectorAll("[data-adjust]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [team, amount] = button.dataset.adjust.split(":");
+          addScore(team, Number(amount));
+        });
+      });
+
+      document.querySelectorAll("[data-team]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!state.active) return;
+          addScore(button.dataset.team, state.active.value);
+          dialog.close();
+        });
+      });
+
+      renderSelect();
+      renderScores();
+      renderBoard();
+    </script>
+  </body>
+</html>
