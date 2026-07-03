@@ -756,6 +756,80 @@
             },
           ],
         },
+        {
+          id: "extended-challenge",
+          title: "Extended Edition: Mixed Challenge",
+          subtitle: "Richer questions across earning money, formulas, equations and measurement",
+          categories: [
+            {
+              title: "Pay and Tax",
+              clues: [
+                [
+                  "A worker earns $32 per hour for 38 normal hours, then 4 hours at time-and-a-half, plus a $27 site allowance. Find the gross pay.",
+                  "$1,435",
+                ],
+                [
+                  "An annual salary is $84,760. Find the total pay for 4 weeks of annual leave including 17.5% leave loading.",
+                  "$7,661",
+                ],
+                [
+                  "A salesperson earns a $420 retainer plus 6% commission on sales above $5,000. If weekly sales are $18,750, find total earnings.",
+                  "$1,245",
+                ],
+                [
+                  "Gross income is $91,500 and deductions are $6,280. Use tax = $4,288 + 30% of taxable income over $45,000, plus 2% Medicare levy. Find the total due to the nearest dollar.",
+                  "$18,058",
+                ],
+                [
+                  "Emma earns $74,500 from one job and $9,250 from another. She has $3,600 deductions and paid $18,650 PAYG tax. Using tax = $4,288 + 30% over $45,000 plus 2% Medicare, find her refund or tax owing.",
+                  "$2,214 refund",
+                ],
+              ],
+            },
+            {
+              title: "Algebra Models",
+              clues: [
+                ["Evaluate 5x^2 - 3y when x = 4 and y = 7.", "59"],
+                ["Solve 3(2x - 5) + 4 = 5x + 11.", "x = 22"],
+                ["A plumber charges a $95 call-out fee plus $82 per hour. The bill is $464. How many hours were worked?", "4.5 hours"],
+                ["Make h the subject of V = 1/3 pi r^2 h, then find h when V = 452.16, r = 6 and pi = 3.14.", "h = 3V/(pi r^2), so h = 12"],
+                ["Use S = vt. A satellite travels at 7.8 x 10^3 m/s for 2.4 x 10^4 seconds. Write the distance in scientific notation.", "1.872 x 10^8 m"],
+              ],
+            },
+            {
+              title: "Health Formulas",
+              clues: [
+                ["A medicine contains 120 mg in 30 mL. Find the concentration in mg/mL.", "4 mg/mL"],
+                ["Young's formula is D = yA/(y + 12). Find the child dose for an 8-year-old if the adult dose is 50 mL.", "20 mL"],
+                ["An IV gives 500 mL over 4 hours. There are 20 drops per mL. Find the drip rate to the nearest drop per minute.", "42 drops/min"],
+                ["Male BAC = (10N - 7.5H)/(6.8M). For M = 80, N = 6 and H = 2, find BAC to 3 d.p. and the wait time to zero using BAC/0.015.",
+                  "BAC = 0.083; wait about 6 hours"],
+                ["Female BAC = (10N - 7.5H)/(5.5M). A 60 kg woman wants BAC = 0.050 after 3 hours. Find N to 1 decimal place.", "3.9 standard drinks"],
+              ],
+            },
+            {
+              title: "Measurement Design",
+              clues: [
+                ["A 7.5 m ladder has its base 2.1 m from a wall. How high up the wall does it reach, to 2 decimal places?", "7.20 m"],
+                ["Convert both: 3.6 m^2 to cm^2 and 0.048 m^3 to litres.", "36,000 cm^2 and 48 L"],
+                ["An annulus has outer radius 9 m and inner radius 4 m. Use pi = 3.14 to find its area.", "204.1 m^2"],
+                ["A sector has radius 12 m and angle 135 degrees. Using pi = 3.14, find its area and perimeter.", "Area = 169.56 m^2; perimeter = 52.26 m"],
+                ["Offsets across an irregular field are 8 m, 11 m, 15 m and 10 m at 6 m intervals. Use three applications of the trapezoidal rule to estimate the area.", "210 m^2"],
+              ],
+            },
+            {
+              title: "Integrated Decisions",
+              clues: [
+                ["A 14 m by 9 m lawn has a circular pond of radius 2 m removed. Turf costs $18 per m^2. Use pi = 3.14 and find the turf cost to the nearest dollar.", "$2,042"],
+                ["A worker earns $28 per hour for 7.5 hours while handling 12 sheets, each 2.4 m by 1.2 m. Find the labour cost per square metre of sheet handled.", "$6.08 per m^2"],
+                ["A tank is made from a cylinder of radius 1.5 m and height 4 m plus a cone of the same radius and height 1.2 m. Use pi = 3.14. Find the capacity in litres.", "31,086 L"],
+                ["A 250 mL medicine bottle contains 80 mg per 5 mL. A patient needs 240 mg per dose, three doses per day. How many full days will the bottle last?", "5 full days"],
+                ["A worker in the 30% tax bracket earns extra weekend pay: $38 per hour for 6 hours each week for 10 weeks. Medicare is 2%. Estimate the extra tax plus Medicare and the after-tax extra income.",
+                  "Extra tax plus Medicare = $729.60; after-tax extra income = $1,550.40"],
+              ],
+            },
+          ],
+        },
       ];
 
       const pi = 3.14;
@@ -791,6 +865,14 @@
 
       function term(coefficient, variable) {
         return coefficient === 1 ? variable : `${coefficient}${variable}`;
+      }
+
+      function taxPayable2025(taxableIncome) {
+        if (taxableIncome <= 18200) return 0;
+        if (taxableIncome <= 45000) return (taxableIncome - 18200) * 0.16;
+        if (taxableIncome <= 135000) return 4288 + (taxableIncome - 45000) * 0.3;
+        if (taxableIncome <= 190000) return 31288 + (taxableIncome - 135000) * 0.37;
+        return 51638 + (taxableIncome - 190000) * 0.45;
       }
 
       function generateCluesForGame(game) {
@@ -1204,6 +1286,241 @@
         "measurement:4:4": () => {
           const cubicMetres = randInt(12, 55) / 10;
           return [`Convert ${formatNumber(cubicMetres, 1)} m^3 to litres.`, `${formatNumber(cubicMetres * 1000, 0)} L`];
+        },
+        "extended-challenge:0:0": () => {
+          const rate = randInt(28, 38);
+          const overtimeHours = randInt(2, 5);
+          const allowance = randInt(18, 35);
+          const total = rate * 38 + rate * 1.5 * overtimeHours + allowance;
+          return [
+            `A worker earns ${formatCurrency(rate)} per hour for 38 normal hours, then ${overtimeHours} hours at time-and-a-half, plus a ${formatCurrency(allowance)} site allowance. Find the gross pay.`,
+            formatCurrency(total),
+          ];
+        },
+        "extended-challenge:0:1": () => {
+          const weekly = randInt(29, 39) * 50;
+          const loading = randomItem([17.5, 20]);
+          const salary = weekly * 52;
+          const total = weekly * 4 * (1 + loading / 100);
+          return [
+            `An annual salary is ${formatCurrency(salary)}. Find the total pay for 4 weeks of annual leave including ${loading}% leave loading. Answer to the nearest dollar.`,
+            formatCurrency(Math.round(total)),
+          ];
+        },
+        "extended-challenge:0:2": () => {
+          const retainer = randInt(36, 55) * 10;
+          const threshold = randomItem([4000, 5000, 6000]);
+          const commissionRate = randomItem([4, 5, 6, 8]);
+          const sales = threshold + randInt(7, 18) * 1000 + randInt(0, 9) * 50;
+          const total = retainer + (sales - threshold) * (commissionRate / 100);
+          return [
+            `A salesperson earns a ${formatCurrency(retainer)} retainer plus ${commissionRate}% commission on sales above ${formatCurrency(threshold)}. If weekly sales are ${formatCurrency(sales)}, find total earnings.`,
+            formatCurrency(total),
+          ];
+        },
+        "extended-challenge:0:3": () => {
+          const gross = randInt(82, 112) * 1000;
+          const deductions = randInt(22, 82) * 100;
+          const taxable = gross - deductions;
+          const totalDue = taxPayable2025(taxable) + taxable * 0.02;
+          return [
+            `Gross income is ${formatCurrency(gross)} and deductions are ${formatCurrency(deductions)}. Use tax = $4,288 + 30% of taxable income over $45,000, plus 2% Medicare levy. Find the total due to the nearest dollar.`,
+            formatCurrency(Math.round(totalDue)),
+          ];
+        },
+        "extended-challenge:0:4": () => {
+          const mainIncome = randInt(62, 82) * 1000;
+          const secondIncome = randInt(85, 150) * 100;
+          const deductions = randInt(24, 50) * 100;
+          const taxable = mainIncome + secondIncome - deductions;
+          const totalDue = taxPayable2025(taxable) + taxable * 0.02;
+          const payg = Math.round((totalDue + randomItem([-2600, -1400, 1600, 2400])) / 50) * 50;
+          const difference = payg - totalDue;
+          return [
+            `A person earns ${formatCurrency(mainIncome)} from one job and ${formatCurrency(secondIncome)} from another. They have ${formatCurrency(deductions)} deductions and paid ${formatCurrency(payg)} PAYG tax. Using tax = $4,288 + 30% over $45,000 plus 2% Medicare, find the refund or tax owing.`,
+            difference >= 0 ? `${formatCurrency(Math.round(difference))} refund` : `${formatCurrency(Math.round(Math.abs(difference)))} owing`,
+          ];
+        },
+        "extended-challenge:1:0": () => {
+          const a = randInt(3, 7);
+          const b = randInt(2, 6);
+          const x = randInt(3, 6);
+          const y = randInt(4, 9);
+          return [`Evaluate ${a}x^2 - ${b}y when x = ${x} and y = ${y}.`, formatNumber(a * x * x - b * y, 0)];
+        },
+        "extended-challenge:1:1": () => {
+          const answer = randInt(5, 18);
+          const outside = randInt(2, 5);
+          const xCoeff = randInt(2, 5);
+          const subtract = randInt(2, 9);
+          const add = randInt(1, 10);
+          const rightCoeff = outside * xCoeff - randInt(1, 4);
+          const rightAdd = outside * (xCoeff * answer - subtract) + add - rightCoeff * answer;
+          return [`Solve ${outside}(${xCoeff}x - ${subtract}) + ${add} = ${rightCoeff}x + ${rightAdd}.`, `x = ${answer}`];
+        },
+        "extended-challenge:1:2": () => {
+          const fee = randInt(65, 115);
+          const rate = randomItem([72, 78, 82, 88, 95]);
+          const hours = randomItem([2.5, 3, 3.5, 4, 4.5, 5]);
+          const bill = fee + rate * hours;
+          return [`A plumber charges a ${formatCurrency(fee)} call-out fee plus ${formatCurrency(rate)} per hour. The bill is ${formatCurrency(bill)}. How many hours were worked?`, `${formatNumber(hours, 1)} hours`];
+        },
+        "extended-challenge:1:3": () => {
+          const radius = randInt(3, 8);
+          const height = randInt(5, 14);
+          const volume = (pi * radius * radius * height) / 3;
+          return [
+            `Make h the subject of V = 1/3 pi r^2 h, then find h when V = ${formatNumber(volume)}, r = ${radius} and pi = 3.14.`,
+            `h = 3V/(pi r^2), so h = ${height}`,
+          ];
+        },
+        "extended-challenge:1:4": () => {
+          const timeCoeff = randomItem([2.1, 2.4, 3.5, 4.2]);
+          const timePow = randInt(3, 5);
+          const speedCoeff = randomItem([3.2, 4.5, 6.4, 7.8]);
+          const speedPow = randInt(3, 4);
+          let coefficient = speedCoeff * timeCoeff;
+          let exponent = speedPow + timePow;
+          while (coefficient >= 10) {
+            coefficient /= 10;
+            exponent += 1;
+          }
+          return [
+            `Use S = vt. A satellite travels at ${formatNumber(speedCoeff, 1)} x 10^${speedPow} m/s for ${formatNumber(timeCoeff, 1)} x 10^${timePow} seconds. Write the distance in scientific notation.`,
+            `${formatNumber(coefficient, 3)} x 10^${exponent} m`,
+          ];
+        },
+        "extended-challenge:2:0": () => {
+          const mass = randomItem([80, 120, 150, 240, 300]);
+          const volume = randomItem([20, 30, 40, 50, 60]);
+          return [`A medicine contains ${mass} mg in ${volume} mL. Find the concentration in mg/mL.`, `${formatNumber(mass / volume)} mg/mL`];
+        },
+        "extended-challenge:2:1": () => {
+          const age = randInt(3, 10);
+          const adultDose = randomItem([30, 40, 50, 60, 75]);
+          const dose = (age * adultDose) / (age + 12);
+          return [`Young's formula is D = yA/(y + 12). Find the child dose for a ${age}-year-old if the adult dose is ${adultDose} mL. Answer to the nearest mL.`, `${Math.round(dose)} mL`];
+        },
+        "extended-challenge:2:2": () => {
+          const volume = randomItem([500, 750, 1000, 1500]);
+          const hours = randomItem([2, 3, 4, 5, 6]);
+          const dropsPerMl = randomItem([15, 20]);
+          const dropsPerMinute = Math.round((volume * dropsPerMl) / (hours * 60));
+          return [`An IV gives ${volume} mL over ${hours} hours. There are ${dropsPerMl} drops per mL. Find the drip rate to the nearest drop per minute.`, `${dropsPerMinute} drops/min`];
+        },
+        "extended-challenge:2:3": () => {
+          const mass = randomItem([72, 80, 86, 94]);
+          const drinks = randInt(4, 8);
+          const hours = randInt(1, 4);
+          const bac = (10 * drinks - 7.5 * hours) / (6.8 * mass);
+          const wait = Math.max(0, Math.round(bac / 0.015));
+          return [
+            `Male BAC = (10N - 7.5H)/(6.8M). For M = ${mass}, N = ${drinks} and H = ${hours}, find BAC to 3 d.p. and the wait time to zero using BAC/0.015.`,
+            `BAC = ${formatBac(bac)}; wait about ${wait} hours`,
+          ];
+        },
+        "extended-challenge:2:4": () => {
+          const mass = randomItem([55, 60, 65, 70]);
+          const hours = randomItem([2, 3, 4]);
+          const target = randomItem([0.05, 0.06, 0.08]);
+          const drinks = (target * 5.5 * mass + 7.5 * hours) / 10;
+          return [`Female BAC = (10N - 7.5H)/(5.5M). A ${mass} kg woman wants BAC = ${formatBac(target)} after ${hours} hours. Find N to 1 decimal place.`, `${formatNumber(drinks, 1)} standard drinks`];
+        },
+        "extended-challenge:3:0": () => {
+          const ladder = randomItem([5, 6, 7.5, 8, 10]);
+          const base = randomItem([1.2, 1.5, 2.1, 2.4, 3.2]);
+          const height = Math.sqrt(ladder * ladder - base * base);
+          return [`A ${formatNumber(ladder, 1)} m ladder has its base ${formatNumber(base, 1)} m from a wall. How high up the wall does it reach, to 2 decimal places?`, `${height.toFixed(2)} m`];
+        },
+        "extended-challenge:3:1": () => {
+          const squareMetres = randomItem([1.2, 2.5, 3.6, 4.8]);
+          const cubicMetres = randomItem([0.024, 0.048, 1.25, 2.4]);
+          return [
+            `Convert both: ${formatNumber(squareMetres, 1)} m^2 to cm^2 and ${formatNumber(cubicMetres, 3)} m^3 to litres.`,
+            `${formatNumber(squareMetres * 10000, 0)} cm^2 and ${formatNumber(cubicMetres * 1000, 0)} L`,
+          ];
+        },
+        "extended-challenge:3:2": () => {
+          const outer = randInt(7, 12);
+          const inner = randInt(2, outer - 3);
+          const area = pi * (outer * outer - inner * inner);
+          return [`An annulus has outer radius ${outer} m and inner radius ${inner} m. Use pi = 3.14 to find its area.`, `${formatNumber(area)} m^2`];
+        },
+        "extended-challenge:3:3": () => {
+          const radius = randomItem([6, 8, 10, 12, 15]);
+          const angle = randomItem([60, 90, 120, 135, 150]);
+          const area = (angle / 360) * pi * radius * radius;
+          const arc = (angle / 360) * 2 * pi * radius;
+          return [
+            `A sector has radius ${radius} m and angle ${angle} degrees. Using pi = 3.14, find its area and perimeter.`,
+            `Area = ${formatNumber(area)} m^2; perimeter = ${formatNumber(arc + 2 * radius)} m`,
+          ];
+        },
+        "extended-challenge:3:4": () => {
+          const spacing = randomItem([4, 5, 6, 8, 10]);
+          const offsets = [randInt(6, 14), randInt(8, 18), randInt(8, 20), randInt(6, 16)];
+          const area = (spacing / 2) * (offsets[0] + 2 * offsets[1] + 2 * offsets[2] + offsets[3]);
+          return [
+            `Offsets across an irregular field are ${offsets[0]} m, ${offsets[1]} m, ${offsets[2]} m and ${offsets[3]} m at ${spacing} m intervals. Use three applications of the trapezoidal rule to estimate the area.`,
+            `${formatNumber(area)} m^2`,
+          ];
+        },
+        "extended-challenge:4:0": () => {
+          const length = randInt(12, 20);
+          const width = randInt(8, 14);
+          const radius = randomItem([1.5, 2, 2.5, 3]);
+          const turfCost = randInt(14, 24);
+          const area = length * width - pi * radius * radius;
+          return [
+            `A ${length} m by ${width} m lawn has a circular pond of radius ${formatNumber(radius, 1)} m removed. Turf costs ${formatCurrency(turfCost)} per m^2. Use pi = 3.14 and find the turf cost to the nearest dollar.`,
+            formatCurrency(Math.round(area * turfCost)),
+          ];
+        },
+        "extended-challenge:4:1": () => {
+          const rate = randInt(24, 36);
+          const hours = randomItem([6.5, 7.5, 8]);
+          const sheets = randInt(8, 16);
+          const area = sheets * 2.4 * 1.2;
+          const costPerSquareMetre = (rate * hours) / area;
+          return [
+            `A worker earns ${formatCurrency(rate)} per hour for ${formatNumber(hours, 1)} hours while handling ${sheets} sheets, each 2.4 m by 1.2 m. Find the labour cost per square metre of sheet handled.`,
+            `${formatCurrency(costPerSquareMetre)} per m^2`,
+          ];
+        },
+        "extended-challenge:4:2": () => {
+          const radius = randomItem([1.2, 1.5, 2]);
+          const cylinderHeight = randInt(3, 6);
+          const coneHeight = randomItem([1, 1.2, 1.5, 2]);
+          const volume = pi * radius * radius * cylinderHeight + (pi * radius * radius * coneHeight) / 3;
+          return [
+            `A tank is made from a cylinder of radius ${formatNumber(radius, 1)} m and height ${cylinderHeight} m plus a cone of the same radius and height ${formatNumber(coneHeight, 1)} m. Use pi = 3.14. Find the capacity in litres.`,
+            `${formatNumber(Math.round(volume * 1000), 0)} L`,
+          ];
+        },
+        "extended-challenge:4:3": () => {
+          const bottle = randomItem([200, 250, 300]);
+          const mass = randomItem([80, 100, 120]);
+          const stockVolume = randomItem([5, 10]);
+          const doseMass = randomItem([200, 240, 300]);
+          const dosesPerDay = randomItem([2, 3, 4]);
+          const doseVolume = doseMass / (mass / stockVolume);
+          const fullDays = Math.floor(bottle / (doseVolume * dosesPerDay));
+          return [
+            `A ${bottle} mL medicine bottle contains ${mass} mg per ${stockVolume} mL. A patient needs ${doseMass} mg per dose, ${dosesPerDay} doses per day. How many full days will the bottle last?`,
+            `${fullDays} full days`,
+          ];
+        },
+        "extended-challenge:4:4": () => {
+          const rate = randInt(32, 48);
+          const hours = randInt(4, 8);
+          const weeks = randInt(6, 12);
+          const taxRate = randomItem([0.3, 0.37]);
+          const extraIncome = rate * hours * weeks;
+          const extraDue = extraIncome * (taxRate + 0.02);
+          return [
+            `A worker in the ${formatNumber(taxRate * 100, 0)}% tax bracket earns extra weekend pay: ${formatCurrency(rate)} per hour for ${hours} hours each week for ${weeks} weeks. Medicare is 2%. Estimate the extra tax plus Medicare and the after-tax extra income.`,
+            `Extra tax plus Medicare = ${formatCurrency(extraDue)}; after-tax extra income = ${formatCurrency(extraIncome - extraDue)}`,
+          ];
         },
       };
 
