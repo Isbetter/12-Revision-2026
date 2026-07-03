@@ -226,11 +226,30 @@
         padding: 14px;
       }
 
-      .team-card h2 {
-        margin: 0;
+      .team-name-label {
+        display: block;
+        margin-bottom: 6px;
         color: var(--muted);
-        font-size: 13px;
-        line-height: 1.2;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      .team-name {
+        width: 100%;
+        min-height: 36px;
+        box-sizing: border-box;
+        border: 1px solid rgba(0, 255, 255, 0.35);
+        background: #07105f;
+        color: var(--text);
+        padding: 0 10px;
+        font-size: 15px;
+        font-weight: 800;
+      }
+
+      .team-name:focus {
+        outline: 3px solid var(--cyan);
+        outline-offset: 2px;
       }
 
       .score {
@@ -254,6 +273,20 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         background: #111b83;
         color: var(--text);
+        font-size: 12px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+      }
+
+      .custom-score {
+        grid-column: 1 / -1;
+        min-height: 34px;
+        box-sizing: border-box;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: #060b3b;
+        color: var(--text);
+        padding: 0 10px;
+        font-size: 14px;
         font-weight: 700;
       }
 
@@ -353,17 +386,18 @@
         color: var(--text);
         padding: 0 14px;
         font-weight: 700;
+        overflow-wrap: anywhere;
       }
 
-      .modal-actions button[data-team="teamA"] {
+      .modal-actions button[data-team-award^="teamA"] {
         border-color: var(--cyan);
       }
 
-      .modal-actions button[data-team="teamB"] {
+      .modal-actions button[data-team-award^="teamB"] {
         border-color: var(--magenta);
       }
 
-      .modal-actions button[data-team="teamC"] {
+      .modal-actions button[data-team-award^="teamC"] {
         border-color: var(--green);
       }
 
@@ -423,7 +457,7 @@
         </div>
         <div class="controls">
           <select class="game-select" id="gameSelect" aria-label="Choose game"></select>
-          <button class="small-button" id="resetBoard" type="button">Reset board</button>
+          <button class="small-button" id="resetBoard" type="button">New board</button>
           <button class="small-button" id="resetScores" type="button">Reset scores</button>
         </div>
       </header>
@@ -435,27 +469,39 @@
 
         <aside class="score-panel" aria-label="Team scores">
           <section class="team-card">
-            <h2>Team A</h2>
+            <label class="team-name-label" for="teamAName">Team name</label>
+            <input class="team-name" id="teamAName" data-team-name="teamA" value="Team A" maxlength="24" />
             <div class="score" id="teamA">0</div>
             <div class="score-actions">
-              <button type="button" data-adjust="teamA:-100">-100</button>
-              <button type="button" data-adjust="teamA:100">+100</button>
+              <button type="button" data-adjust-active="teamA:-1">- clue</button>
+              <button type="button" data-adjust-active="teamA:1">+ clue</button>
+              <input class="custom-score" aria-label="Team A custom score amount" data-custom-score="teamA" inputmode="numeric" type="number" min="1" step="50" value="100" />
+              <button type="button" data-adjust-custom="teamA:-1">- custom</button>
+              <button type="button" data-adjust-custom="teamA:1">+ custom</button>
             </div>
           </section>
           <section class="team-card">
-            <h2>Team B</h2>
+            <label class="team-name-label" for="teamBName">Team name</label>
+            <input class="team-name" id="teamBName" data-team-name="teamB" value="Team B" maxlength="24" />
             <div class="score" id="teamB">0</div>
             <div class="score-actions">
-              <button type="button" data-adjust="teamB:-100">-100</button>
-              <button type="button" data-adjust="teamB:100">+100</button>
+              <button type="button" data-adjust-active="teamB:-1">- clue</button>
+              <button type="button" data-adjust-active="teamB:1">+ clue</button>
+              <input class="custom-score" aria-label="Team B custom score amount" data-custom-score="teamB" inputmode="numeric" type="number" min="1" step="50" value="100" />
+              <button type="button" data-adjust-custom="teamB:-1">- custom</button>
+              <button type="button" data-adjust-custom="teamB:1">+ custom</button>
             </div>
           </section>
           <section class="team-card">
-            <h2>Team C</h2>
+            <label class="team-name-label" for="teamCName">Team name</label>
+            <input class="team-name" id="teamCName" data-team-name="teamC" value="Team C" maxlength="24" />
             <div class="score" id="teamC">0</div>
             <div class="score-actions">
-              <button type="button" data-adjust="teamC:-100">-100</button>
-              <button type="button" data-adjust="teamC:100">+100</button>
+              <button type="button" data-adjust-active="teamC:-1">- clue</button>
+              <button type="button" data-adjust-active="teamC:1">+ clue</button>
+              <input class="custom-score" aria-label="Team C custom score amount" data-custom-score="teamC" inputmode="numeric" type="number" min="1" step="50" value="100" />
+              <button type="button" data-adjust-custom="teamC:-1">- custom</button>
+              <button type="button" data-adjust-custom="teamC:1">+ custom</button>
             </div>
           </section>
           <section class="progress-card">
@@ -478,9 +524,12 @@
         <p class="answer" id="modalAnswer"></p>
         <div class="modal-actions">
           <button type="button" id="showAnswer">Show answer</button>
-          <button type="button" data-team="teamA">Award Team A</button>
-          <button type="button" data-team="teamB">Award Team B</button>
-          <button type="button" data-team="teamC">Award Team C</button>
+          <button type="button" data-team-award="teamA:1">+ Team A</button>
+          <button type="button" data-team-award="teamA:-1">- Team A</button>
+          <button type="button" data-team-award="teamB:1">+ Team B</button>
+          <button type="button" data-team-award="teamB:-1">- Team B</button>
+          <button type="button" data-team-award="teamC:1">+ Team C</button>
+          <button type="button" data-team-award="teamC:-1">- Team C</button>
         </div>
       </div>
     </dialog>
@@ -660,11 +709,464 @@
         },
       ];
 
+      const pi = 3.14;
+
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function randomItem(items) {
+        return items[randInt(0, items.length - 1)];
+      }
+
+      function formatNumber(value, maxDecimals = 2) {
+        const rounded = Number(Number(value).toFixed(maxDecimals));
+        return rounded.toLocaleString("en-AU", { maximumFractionDigits: maxDecimals });
+      }
+
+      function formatCurrency(value) {
+        const rounded = Number(Number(value).toFixed(2));
+        return `$${rounded.toLocaleString("en-AU", {
+          minimumFractionDigits: Number.isInteger(rounded) ? 0 : 2,
+          maximumFractionDigits: 2,
+        })}`;
+      }
+
+      function decimalFromPercent(percent) {
+        return (percent / 100).toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+      }
+
+      function formatBac(value) {
+        return Number(value.toFixed(3)).toString();
+      }
+
+      function term(coefficient, variable) {
+        return coefficient === 1 ? variable : `${coefficient}${variable}`;
+      }
+
+      function generateCluesForGame(game) {
+        game.categories.forEach((category, categoryIndex) => {
+          category.generatedClues = category.clues.map((clue, valueIndex) => {
+            const generator = generators[`${game.id}:${categoryIndex}:${valueIndex}`];
+            return generator ? generator() : clue;
+          });
+        });
+      }
+
+      const generators = {
+        "earning-money:0:0": () => {
+          const percent = randInt(12, 95);
+          return [`Convert ${decimalFromPercent(percent)} to a percentage.`, `${percent}%`];
+        },
+        "earning-money:0:1": () => {
+          const amount = randInt(6, 24) * 10;
+          const percent = randomItem([5, 10, 12, 15, 20, 25, 30]);
+          return [`Increase ${amount} by ${percent}%.`, formatNumber(amount * (1 + percent / 100))];
+        },
+        "earning-money:0:2": () => {
+          const amount = randInt(12, 60) * 20;
+          const percent = randomItem([10, 15, 20, 25, 30, 40]);
+          return [`Find ${percent}% of ${formatCurrency(amount)}.`, formatCurrency(amount * (percent / 100))];
+        },
+        "earning-money:0:3": () => {
+          const price = randInt(8, 45) * 10;
+          const percent = randomItem([10, 15, 20, 25, 30, 40]);
+          return [
+            `A ${formatCurrency(price)} item has a ${percent}% discount. What is the sale price?`,
+            formatCurrency(price * (1 - percent / 100)),
+          ];
+        },
+        "earning-money:0:4": () => {
+          const pay = randInt(50, 110) * 10;
+          const percent = randomItem([5, 8, 10, 12, 15, 20]);
+          return [
+            `A weekly pay rises from ${formatCurrency(pay)} to ${formatCurrency(pay * (1 + percent / 100))}. What is the percentage increase?`,
+            `${percent}%`,
+          ];
+        },
+        "earning-money:1:0": () => {
+          const rate = randInt(22, 42);
+          const hours = randInt(4, 9);
+          return [`A worker earns ${formatCurrency(rate)} per hour for ${hours} hours. What is the gross pay?`, formatCurrency(rate * hours)];
+        },
+        "earning-money:1:1": () => {
+          const weekly = randInt(18, 34) * 50;
+          return [`An annual salary is ${formatCurrency(weekly * 52)}. What is the weekly salary?`, formatCurrency(weekly)];
+        },
+        "earning-money:1:2": () => {
+          const rate = randInt(50, 90) / 2;
+          return [`Find the gross pay for 38 hours at ${formatCurrency(rate)} per hour.`, formatCurrency(rate * 38)];
+        },
+        "earning-money:1:3": () => {
+          const leavePay = randInt(4, 9) * 200;
+          const loading = randomItem([15, 17.5, 20]);
+          return [
+            `Annual leave pay is ${formatCurrency(leavePay)} plus ${loading}% loading. What is the total?`,
+            formatCurrency(leavePay * (1 + loading / 100)),
+          ];
+        },
+        "earning-money:1:4": () => {
+          const salary = randInt(55, 92) * 1000;
+          const percent = randomItem([2, 3, 4, 5, 6]);
+          return [`A bonus is ${percent}% of a ${formatCurrency(salary)} salary. What is the bonus?`, formatCurrency(salary * (percent / 100))];
+        },
+        "earning-money:2:0": () => {
+          const rate = randomItem([
+            ["time-and-a-half", "1.5"],
+            ["double time", "2"],
+          ]);
+          return [`What multiplier is used for ${rate[0]}?`, rate[1]];
+        },
+        "earning-money:2:1": () => {
+          const hours = randInt(2, 5);
+          const rate = randInt(22, 34);
+          return [
+            `Find ${hours} hours of overtime at ${formatCurrency(rate)} per hour paid at time-and-a-half.`,
+            formatCurrency(hours * rate * 1.5),
+          ];
+        },
+        "earning-money:2:2": () => {
+          const hours = randInt(3, 6);
+          const rate = randInt(24, 36);
+          return [`Find ${hours} hours at ${formatCurrency(rate)} per hour paid at double time.`, formatCurrency(hours * rate * 2)];
+        },
+        "earning-money:2:3": () => {
+          const normalHours = randInt(6, 8);
+          const overtimeHours = randInt(1, 4);
+          const rate = randInt(24, 36);
+          return [
+            `A worker earns ${formatCurrency(rate)} per hour for ${normalHours} normal hours and ${overtimeHours} hours at time-and-a-half. Find the gross pay.`,
+            formatCurrency(rate * normalHours + rate * 1.5 * overtimeHours),
+          ];
+        },
+        "earning-money:2:4": () => {
+          const gross = randInt(85, 125) * 10;
+          const allowance = randInt(12, 28);
+          const days = randInt(4, 7);
+          return [
+            `A worker receives ${formatCurrency(gross)} gross pay plus a ${formatCurrency(allowance)} daily allowance for ${days} days. Find the total gross pay.`,
+            formatCurrency(gross + allowance * days),
+          ];
+        },
+        "earning-money:3:0": () => {
+          const percent = randomItem([3, 4, 5, 6, 8]);
+          const sales = randInt(20, 80) * 100;
+          return [`Find ${percent}% commission on ${formatCurrency(sales)} of sales.`, formatCurrency(sales * (percent / 100))];
+        },
+        "earning-money:3:1": () => {
+          const base = randInt(45, 80) * 10;
+          const percent = randomItem([4, 5, 6, 8, 10]);
+          const sales = randInt(30, 90) * 100;
+          return [
+            `Base pay is ${formatCurrency(base)} plus ${percent}% commission on ${formatCurrency(sales)}. Find total pay.`,
+            formatCurrency(base + sales * (percent / 100)),
+          ];
+        },
+        "earning-money:3:2": () => {
+          const rate = randInt(125, 350) / 100;
+          const items = randInt(16, 42) * 10;
+          return [`Piecework pays ${formatCurrency(rate)} per item. Find the pay for ${items} items.`, formatCurrency(rate * items)];
+        },
+        "earning-money:3:3": () => {
+          const percent = randomItem([8, 10, 12, 15]);
+          const sales = randInt(80, 240) * 100;
+          return [`Royalties are ${percent}% of ${formatCurrency(sales)}. Find the royalty payment.`, formatCurrency(sales * (percent / 100))];
+        },
+        "earning-money:3:4": () => {
+          const firstRate = randomItem([3, 4, 5]);
+          const secondRate = firstRate + randomItem([1, 2, 3]);
+          const firstSales = randInt(15, 30) * 1000;
+          const extraSales = randInt(8, 18) * 1000;
+          return [
+            `Commission is ${firstRate}% on the first ${formatCurrency(firstSales)} and ${secondRate}% on the next ${formatCurrency(extraSales)}. Find total commission.`,
+            formatCurrency(firstSales * (firstRate / 100) + extraSales * (secondRate / 100)),
+          ];
+        },
+        "earning-money:4:1": () => {
+          const gross = randInt(75, 130) * 10;
+          const deductions = randInt(8, 28) * 5;
+          return [`Gross pay is ${formatCurrency(gross)} and deductions are ${formatCurrency(deductions)}. Find net pay.`, formatCurrency(gross - deductions)];
+        },
+        "earning-money:4:2": () => {
+          const income = randInt(48, 92) * 1000;
+          const deductions = randInt(12, 55) * 100;
+          return [
+            `Income is ${formatCurrency(income)} and allowable deductions are ${formatCurrency(deductions)}. Find taxable income.`,
+            formatCurrency(income - deductions),
+          ];
+        },
+        "earning-money:4:3": () => {
+          const income = randInt(45, 95) * 1000;
+          return [`Find a 2% Medicare levy on ${formatCurrency(income)}.`, formatCurrency(income * 0.02)];
+        },
+        "earning-money:4:4": () => {
+          const tax = randInt(60, 150) * 100;
+          const levy = randInt(8, 20) * 100;
+          return [`Income tax is ${formatCurrency(tax)} and Medicare levy is ${formatCurrency(levy)}. Find the total amount payable.`, formatCurrency(tax + levy)];
+        },
+        "formulas-equations:0:0": () => {
+          const a = randInt(2, 7);
+          const b = randInt(1, 12);
+          const x = randInt(2, 9);
+          return [`Evaluate ${a}x + ${b} when x = ${x}.`, formatNumber(a * x + b, 0)];
+        },
+        "formulas-equations:0:1": () => {
+          const b = randInt(2, 7);
+          const a = b + randInt(2, 7);
+          return [`Evaluate a^2 - b^2 when a = ${a} and b = ${b}.`, formatNumber(a * a - b * b, 0)];
+        },
+        "formulas-equations:0:2": () => {
+          const r = randInt(3, 12);
+          return [`Use C = 2 pi r with r = ${r} and pi = 3.14. Find C.`, formatNumber(2 * pi * r)];
+        },
+        "formulas-equations:0:3": () => {
+          const v = randInt(45, 110);
+          const t = randInt(2, 5);
+          return [`Use v = d/t with d = ${v * t} and t = ${t}. Find v.`, formatNumber(v, 0)];
+        },
+        "formulas-equations:0:4": () => {
+          const principal = randInt(5, 20) * 100;
+          const ratePercent = randomItem([3, 4, 5, 6, 8]);
+          const years = randInt(2, 5);
+          return [
+            `Use A = P(1 + rn) with P = ${principal}, r = ${decimalFromPercent(ratePercent)} and n = ${years}. Find A.`,
+            formatNumber(principal * (1 + (ratePercent / 100) * years)),
+          ];
+        },
+        "formulas-equations:1:0": () => {
+          const a = randInt(2, 8);
+          const b = randInt(2, 8);
+          return [`Simplify ${a}x + ${b}x.`, `${a + b}x`];
+        },
+        "formulas-equations:1:1": () => {
+          const a = randInt(2, 7);
+          const b = randInt(2, 9);
+          return [`Expand ${a}(x + ${b}).`, `${a}x + ${a * b}`];
+        },
+        "formulas-equations:1:2": () => {
+          const a = randInt(3, 9);
+          const b = randInt(2, 8);
+          const c = randInt(1, a - 1);
+          const d = randInt(2, 8);
+          return [`Simplify ${a}a + ${b}b - ${c}a + ${d}b.`, `${term(a - c, "a")} + ${term(b + d, "b")}`];
+        },
+        "formulas-equations:1:3": () => {
+          const outside = randInt(2, 5);
+          const xCoeff = randInt(2, 6);
+          const constant = randInt(2, 9);
+          return [`Expand -${outside}(${xCoeff}x - ${constant}).`, `-${outside * xCoeff}x + ${outside * constant}`];
+        },
+        "formulas-equations:1:4": () => {
+          const common = randInt(2, 9);
+          const xCoeff = randInt(2, 6);
+          const constant = randInt(2, 9);
+          return [`Factorise ${common * xCoeff}x + ${common * constant}.`, `${common}(${xCoeff}x + ${constant})`];
+        },
+        "formulas-equations:2:0": () => {
+          const answer = randInt(4, 18);
+          const add = randInt(3, 12);
+          return [`Solve x + ${add} = ${answer + add}.`, `x = ${answer}`];
+        },
+        "formulas-equations:2:1": () => {
+          const answer = randInt(4, 12);
+          const multiplier = randInt(3, 9);
+          return [`Solve ${multiplier}x = ${multiplier * answer}.`, `x = ${answer}`];
+        },
+        "formulas-equations:2:2": () => {
+          const answer = randInt(3, 11);
+          const multiplier = randInt(3, 7);
+          const subtract = randInt(2, 12);
+          return [`Solve ${multiplier}x - ${subtract} = ${multiplier * answer - subtract}.`, `x = ${answer}`];
+        },
+        "formulas-equations:2:3": () => {
+          const answer = randInt(3, 10);
+          const add = randInt(2, 8);
+          const multiplier = randInt(2, 5);
+          return [`Solve ${multiplier}(x + ${add}) = ${multiplier * (answer + add)}.`, `x = ${answer}`];
+        },
+        "formulas-equations:2:4": () => {
+          const answer = randInt(3, 10);
+          const leftCoeff = randInt(4, 8);
+          const rightCoeff = randInt(1, leftCoeff - 2);
+          const leftAdd = randInt(2, 12);
+          const rightAdd = (leftCoeff - rightCoeff) * answer + leftAdd;
+          return [`Solve ${leftCoeff}x + ${leftAdd} = ${rightCoeff}x + ${rightAdd}.`, `x = ${answer}`];
+        },
+        "formulas-equations:3:0": () => {
+          const speed = randInt(45, 110);
+          const time = randInt(2, 6) / 2;
+          return [`Use d = st. Find d when s = ${speed} and t = ${formatNumber(time)}.`, `d = ${formatNumber(speed * time)}`];
+        },
+        "formulas-equations:3:1": () => {
+          const speed = randInt(45, 120);
+          const time = randInt(2, 5);
+          return [`Use v = d/t. Find v when d = ${speed * time} and t = ${time}.`, `v = ${speed}`];
+        },
+        "formulas-equations:4:0": () => {
+          const reaction = randInt(8, 24);
+          const braking = randInt(18, 48);
+          return [`Stopping distance is reaction distance plus braking distance. Find it if they are ${reaction} m and ${braking} m.`, `${reaction + braking} m`];
+        },
+        "formulas-equations:4:1": () => {
+          const dose = randomItem([4, 5, 6, 8]);
+          const weight = randInt(3, 9) * 10;
+          return [`Dosage is ${dose} mL per 10 kg. Find the dosage for ${weight} kg.`, `${formatNumber((dose * weight) / 10)} mL`];
+        },
+        "formulas-equations:4:2": () => {
+          const speed = randInt(50, 110);
+          const hours = randInt(2, 5);
+          return [`How long does ${speed * hours} km take at ${speed} km/h?`, `${hours} hours`];
+        },
+        "formulas-equations:4:3": () => {
+          const volume = randInt(4, 12) * 100;
+          const hours = randInt(2, 8);
+          return [`An IV drip gives ${volume} mL over ${hours} hours. Find the rate in mL per hour.`, `${formatNumber(volume / hours)} mL/h`];
+        },
+        "formulas-equations:4:4": () => {
+          const start = randomItem([0.065, 0.075, 0.08, 0.095]);
+          const hours = randInt(1, 4);
+          return [`BAC decreases by 0.015 per hour. If BAC is ${formatBac(start)}, what is it after ${hours} hours?`, formatBac(Math.max(0, start - 0.015 * hours))];
+        },
+        "measurement:0:0": () => {
+          const triple = randomItem([[3, 4, 5], [5, 12, 13], [8, 15, 17]]);
+          return [`A right triangle has legs ${triple[0]} and ${triple[1]}. Find the hypotenuse.`, `${triple[2]}`];
+        },
+        "measurement:0:1": () => {
+          const triple = randomItem([[3, 4, 5], [5, 12, 13], [7, 24, 25]]);
+          const scale = randomItem([2, 3]);
+          return [`A right triangle has legs ${triple[0] * scale} and ${triple[1] * scale}. Find the hypotenuse.`, `${triple[2] * scale}`];
+        },
+        "measurement:0:2": () => {
+          const triple = randomItem([[5, 12, 13], [8, 15, 17], [7, 24, 25]]);
+          return [`The hypotenuse is ${triple[2]} and one leg is ${triple[0]}. Find the other leg.`, `${triple[1]}`];
+        },
+        "measurement:0:3": () => {
+          const ladder = randomItem([5, 6, 8, 10]);
+          const base = randInt(10, Math.floor(ladder * 7)) / 10;
+          const height = Math.sqrt(ladder * ladder - base * base);
+          return [`A ${ladder} m ladder has its base ${formatNumber(base, 1)} m from a wall. How high up the wall does it reach, to 2 decimal places?`, `${height.toFixed(2)} m`];
+        },
+        "measurement:0:4": () => {
+          const triple = randomItem([[6, 8, 10], [9, 12, 15], [12, 16, 20]]);
+          return [`A rectangle has diagonal ${triple[2]} and width ${triple[0]}. Find its length.`, `${triple[1]}`];
+        },
+        "measurement:1:0": () => {
+          const km = randInt(6, 35) / 10;
+          return [`Convert ${formatNumber(km, 1)} km to metres.`, `${formatNumber(km * 1000, 0)} m`];
+        },
+        "measurement:1:1": () => {
+          const ml = randInt(8, 24) * 250;
+          return [`Convert ${formatNumber(ml, 0)} mL to litres.`, `${formatNumber(ml / 1000)} L`];
+        },
+        "measurement:1:2": () => {
+          const coefficient = randInt(12, 95) / 10;
+          const power = randomItem([4, 5, 6]);
+          return [`Write ${formatNumber(coefficient, 1)} x 10^${power} as an ordinary number.`, formatNumber(Math.round(coefficient * 10 ** power), 0)];
+        },
+        "measurement:1:3": () => {
+          const coefficient = randInt(12, 95) / 10;
+          const power = randomItem([3, 4, 5]);
+          const decimal = (coefficient * 10 ** -power).toFixed(power + 1).replace(/0+$/, "").replace(/\.$/, "");
+          return [`Write ${decimal} in scientific notation.`, `${formatNumber(coefficient, 1)} x 10^-${power}`];
+        },
+        "measurement:1:4": () => {
+          const metres = randInt(12, 45) / 10;
+          return [`Convert ${formatNumber(metres, 1)} m^2 to cm^2.`, `${formatNumber(metres * 10000, 0)} cm^2`];
+        },
+        "measurement:2:0": () => {
+          const length = randInt(6, 18);
+          const width = randInt(3, 12);
+          return [`Find the perimeter of a rectangle ${length} cm by ${width} cm.`, `${2 * (length + width)} cm`];
+        },
+        "measurement:2:1": () => {
+          const base = randInt(6, 18);
+          const height = randInt(4, 14);
+          return [`Find the area of a triangle with base ${base} and height ${height}.`, `${formatNumber((base * height) / 2)} square units`];
+        },
+        "measurement:2:2": () => {
+          const radius = randInt(3, 12);
+          return [`Find the circumference of a circle with radius ${radius}, using pi = 3.14.`, `${formatNumber(2 * pi * radius)} units`];
+        },
+        "measurement:2:3": () => {
+          const angle = randomItem([60, 90, 120, 180]);
+          const radius = randInt(3, 10);
+          return [`Find the area of a ${angle} degree sector with radius ${radius}, using pi = 3.14.`, `${formatNumber((angle / 360) * pi * radius * radius)} square units`];
+        },
+        "measurement:2:4": () => {
+          const length = randInt(8, 15);
+          const width = randInt(5, 10);
+          const cutLength = randInt(2, Math.max(2, length - 4));
+          const cutWidth = randInt(2, Math.max(2, width - 3));
+          return [
+            `A ${length} by ${width} rectangle has a ${cutLength} by ${cutWidth} rectangle cut out. Find the remaining area.`,
+            `${length * width - cutLength * cutWidth} square units`,
+          ];
+        },
+        "measurement:3:0": () => {
+          const length = randInt(4, 10);
+          const width = randInt(3, 8);
+          const height = randInt(2, 7);
+          return [`Find the surface area of a rectangular prism ${length} by ${width} by ${height}.`, `${2 * (length * width + length * height + width * height)} square units`];
+        },
+        "measurement:3:1": () => {
+          const side = randInt(3, 9);
+          return [`Find the surface area of a cube with side length ${side}.`, `${6 * side * side} square units`];
+        },
+        "measurement:3:2": () => {
+          const radius = randInt(2, 7);
+          const height = randInt(6, 14);
+          return [`Find the total surface area of a cylinder with r = ${radius} and h = ${height}, using pi = 3.14.`, `${formatNumber(2 * pi * radius * radius + 2 * pi * radius * height)} square units`];
+        },
+        "measurement:3:3": () => {
+          const radius = randInt(3, 9);
+          return [`Find the surface area of a sphere with r = ${radius}, using pi = 3.14.`, `${formatNumber(4 * pi * radius * radius)} square units`];
+        },
+        "measurement:3:4": () => {
+          const triple = randomItem([[3, 4, 5], [5, 12, 13], [6, 8, 10]]);
+          const length = randInt(6, 14);
+          const area = (triple[0] * triple[1]) / 2;
+          const surfaceArea = 2 * area + (triple[0] + triple[1] + triple[2]) * length;
+          return [
+            `A triangular prism has a ${triple[0]}-${triple[1]}-${triple[2]} triangular end and length ${length}. Find its surface area.`,
+            `${surfaceArea} square units`,
+          ];
+        },
+        "measurement:4:0": () => {
+          const length = randInt(4, 12);
+          const width = randInt(3, 9);
+          const height = randInt(2, 8);
+          return [`Find the volume of a rectangular prism ${length} by ${width} by ${height}.`, `${length * width * height} cubic units`];
+        },
+        "measurement:4:1": () => {
+          const radius = randInt(2, 7);
+          const height = randInt(5, 14);
+          return [`Find the volume of a cylinder with r = ${radius} and h = ${height}, using pi = 3.14.`, `${formatNumber(pi * radius * radius * height)} cubic units`];
+        },
+        "measurement:4:2": () => {
+          const baseArea = randInt(6, 20) * 6;
+          const height = randInt(2, 7) * 3;
+          return [`Find the volume of a pyramid with base area ${baseArea} and height ${height}.`, `${formatNumber((baseArea * height) / 3)} cubic units`];
+        },
+        "measurement:4:3": () => {
+          const radius = randInt(2, 7);
+          const height = randInt(2, 6) * 3;
+          return [`Find the volume of a cone with r = ${radius} and h = ${height}, using pi = 3.14.`, `${formatNumber((pi * radius * radius * height) / 3)} cubic units`];
+        },
+        "measurement:4:4": () => {
+          const cubicMetres = randInt(12, 55) / 10;
+          return [`Convert ${formatNumber(cubicMetres, 1)} m^3 to litres.`, `${formatNumber(cubicMetres * 1000, 0)} L`];
+        },
+      };
+
+      games.forEach(generateCluesForGame);
+
       const values = [100, 200, 300, 400, 500];
+      const defaultTeamNames = { teamA: "Team A", teamB: "Team B", teamC: "Team C" };
       const state = {
         gameIndex: 0,
         used: new Set(),
         scores: { teamA: 0, teamB: 0, teamC: 0 },
+        teamNames: { ...defaultTeamNames },
         active: null,
       };
 
@@ -686,6 +1188,37 @@
         return `${currentGame().id}:${categoryIndex}:${valueIndex}`;
       }
 
+      function getClue(categoryIndex, valueIndex) {
+        const category = currentGame().categories[categoryIndex];
+        return category.generatedClues?.[valueIndex] || category.clues[valueIndex];
+      }
+
+      function displayTeamName(team) {
+        return state.teamNames[team].trim() || defaultTeamNames[team];
+      }
+
+      function renderTeamNames() {
+        document.querySelectorAll("[data-team-name]").forEach((input) => {
+          const team = input.dataset.teamName;
+          if (document.activeElement !== input) input.value = state.teamNames[team];
+        });
+
+        document.querySelectorAll("[data-team-award]").forEach((button) => {
+          const [team, direction] = button.dataset.teamAward.split(":");
+          button.textContent = `${Number(direction) > 0 ? "+" : "-"} ${displayTeamName(team)}`;
+        });
+      }
+
+      function activeClueValue() {
+        return state.active?.value || 100;
+      }
+
+      function customScoreAmount(team) {
+        const input = document.querySelector(`[data-custom-score="${team}"]`);
+        const amount = Math.abs(Number(input?.value));
+        return Number.isFinite(amount) && amount > 0 ? amount : 100;
+      }
+
       function renderSelect() {
         gameSelect.innerHTML = games
           .map((game, index) => `<option value="${index}">${game.title}</option>`)
@@ -697,13 +1230,14 @@
         for (const [team, score] of Object.entries(state.scores)) {
           document.getElementById(team).textContent = score;
         }
+        renderTeamNames();
       }
 
       function renderProgress() {
         const usedInGame = [...state.used].filter((key) => key.startsWith(`${currentGame().id}:`)).length;
         progressCount.textContent = `${usedInGame} / 25 used`;
         progressText.textContent =
-          usedInGame === 25 ? "Board complete. Reset the board or choose another game." : "Choose a value from the board.";
+          usedInGame === 25 ? "Board complete. Start a new board or choose another game." : "Choose a value from the board.";
       }
 
       function renderBoard() {
@@ -739,7 +1273,7 @@
         const game = currentGame();
         const category = game.categories[categoryIndex];
         const value = values[valueIndex];
-        const [question, answer] = category.clues[valueIndex];
+        const [question, answer] = getClue(categoryIndex, valueIndex);
         const key = clueKey(categoryIndex, valueIndex);
 
         state.active = { categoryIndex, valueIndex, value, key };
@@ -755,6 +1289,7 @@
       }
 
       function addScore(team, amount) {
+        if (!(team in state.scores) || !Number.isFinite(amount)) return;
         state.scores[team] += amount;
         renderScores();
       }
@@ -764,6 +1299,8 @@
         for (const key of [...state.used]) {
           if (key.startsWith(`${gameId}:`)) state.used.delete(key);
         }
+        generateCluesForGame(currentGame());
+        state.active = null;
         renderBoard();
       }
 
@@ -785,17 +1322,32 @@
       document.getElementById("resetBoard").addEventListener("click", resetBoard);
       document.getElementById("resetScores").addEventListener("click", resetScores);
 
-      document.querySelectorAll("[data-adjust]").forEach((button) => {
-        button.addEventListener("click", () => {
-          const [team, amount] = button.dataset.adjust.split(":");
-          addScore(team, Number(amount));
+      document.querySelectorAll("[data-team-name]").forEach((input) => {
+        input.addEventListener("input", () => {
+          state.teamNames[input.dataset.teamName] = input.value;
+          renderTeamNames();
         });
       });
 
-      document.querySelectorAll("[data-team]").forEach((button) => {
+      document.querySelectorAll("[data-adjust-active]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [team, direction] = button.dataset.adjustActive.split(":");
+          addScore(team, Number(direction) * activeClueValue());
+        });
+      });
+
+      document.querySelectorAll("[data-adjust-custom]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const [team, direction] = button.dataset.adjustCustom.split(":");
+          addScore(team, Number(direction) * customScoreAmount(team));
+        });
+      });
+
+      document.querySelectorAll("[data-team-award]").forEach((button) => {
         button.addEventListener("click", () => {
           if (!state.active) return;
-          addScore(button.dataset.team, state.active.value);
+          const [team, direction] = button.dataset.teamAward.split(":");
+          addScore(team, Number(direction) * state.active.value);
           dialog.close();
         });
       });
